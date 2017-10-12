@@ -21,12 +21,19 @@ typedef enum {
 	INCR_WAIT,
 	DECR_WAIT,
 } changeT_Enum;
+
+typedef enum {
+	INI = 1,
+	START,
+	STOP,
+} progStat;
 /* Public define ------------------------------------------------------------*/
 #define DBG
 
 /* Public macro -------------------------------------------------------------*/
 /* Public variables ---------------------------------------------------------*/
 volatile changeT_Enum changeT_M;
+volatile progStat status_M;
 
 /* Public function prototypes -----------------------------------------------*/
 void TimingDelay_Decrement(void);

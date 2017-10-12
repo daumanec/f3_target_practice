@@ -167,7 +167,7 @@ void EXTI0_IRQHandler(void)
 		EXTI_ClearITPendingBit(EXTI_Line0);
 
 		if (bounceFiltered_F) {
-			userButtonPressed_F = 1;
+			status_M = START;
 			BBFilter(&bounceFiltered_F);
 		}
 	}
@@ -238,7 +238,10 @@ void EXTI4_IRQHandler(void)
 		EXTI_ClearITPendingBit(EXTI_Line4);
 
 		if (bounceFiltered_F) {
-			rsetButtonPressed_F = 1;
+			if (status_M == STOP) {
+				status_M = INI;
+			}
+//			rsetButtonPressed_F = 1;
 			BBFilter(&bounceFiltered_F);
 		}
 	}

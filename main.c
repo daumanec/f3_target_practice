@@ -4,8 +4,8 @@
 /* Private define ------------------------------------------------------------*/
 #define DBG
 
-#define INI		0x01
-#define START	0x02
+//#define INI		0x01
+//#define START	0x02
 
 #define LED_B1 GPIO_Pin_8
 #define LED_B2 GPIO_Pin_12
@@ -68,7 +68,6 @@ void TIM10secInt_Ini(uint16_t msT);
 // ##############################  MAIN  ###################################
 int main(void)
 {
-	uint8_t status_M;
 	uint8_t cmd;
 	char outS[50];
 	char tmpC[10];
@@ -137,6 +136,9 @@ int main(void)
 			strcat(outS, " ms\r\n");
 			changeT_M = INC_DEC_IDLE_STATE;
 			PutString_DMA_USART1((const char *)outS, (char *) txbuff);
+			break;
+		case START:
+			break;
 		}
 		uint8_t createV = 8;
 		createV++;
