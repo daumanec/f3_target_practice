@@ -1,6 +1,14 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+
 /* Private typedef -----------------------------------------------------------*/
+typedef enum {
+	BEGIN_SHOOT = 0,
+	SHOOT,
+	BEGIN_WAIT,
+	WAIT,
+} wrkState;
+
 /* Private define ------------------------------------------------------------*/
 #define DBG
 
@@ -21,7 +29,7 @@
 #define OUTPUT_BUS_DATA_SHIFT	0x08
 #define INPUT_BUS_DATA_SHIFT	0x07
 
-//#define SHIFT_TO_RESET_BSRR_PART	0x0F
+#define SHIFT_TO_RESET_BSRR_PART	0x0F
 
 #define SHOOT_MS_DISCR		250
 #define WAIT_MS_DISCR		250
@@ -40,6 +48,11 @@ volatile uint8_t userButtonPressed_F = 0;
 volatile uint8_t rsetButtonPressed_F = 0;
 volatile uint8_t newInputData_F = 0;
 volatile int8_t inputData = 0;
+volatile progStat shoot_F = 1;
+
+volatile changeT changeT_M;
+volatile progStat status_M;
+volatile uint8_t wrkCounter = 0;
 
 uint16_t shootMs;
 uint16_t waitMs;
@@ -63,7 +76,8 @@ void InputBus_Ini(void);
 void Delay(volatile uint32_t nTime);
 void ErrorHandler();
 void BBFilter_Ini(void);
-void TIM10secInt_Ini(uint16_t msT);
+void TIM10secInt_Ini(void);
+void TIM10secInt_Set(uint16_t msT);
 
 // ##############################  MAIN  ###################################
 int main(void)
@@ -71,6 +85,7 @@ int main(void)
 	uint8_t cmd;
 	char outS[50];
 	char tmpC[10];
+	uint8_t fin_F = 0;
 
 	SysTick_Config(SystemCoreClock / 100);
 	NVIC_Priority_Config();
@@ -90,10 +105,7 @@ int main(void)
 	Switcher_Ini();
 	OutputBus_Ini();
 	InputBus_Ini();
-
-//	cmd = 3;
-//	OutputBus_Set(cmd);
-//	TIM10secInt_Ini(200);
+	TIM10secInt_Ini();
 
 	// Init values
 	status_M = INI;
@@ -109,7 +121,7 @@ int main(void)
 //	Delay(10);
 	PutString_DMA_USART1((const char *)outS, (char *) txbuff);
 
-	while (1) {
+	while (!error) {
 		switch (status_M){
 		case INI:
 			if (changeT_M == INCR_SHOOT) {
@@ -124,8 +136,9 @@ int main(void)
 			} else if (changeT_M == DECR_WAIT) {
 				if (waitMs > WAIT_MS_MIN)
 					waitMs -= WAIT_MS_DISCR;
-			} else
+			} else {
 				continue;
+			}
 			if (changeT_M == INCR_SHOOT || changeT_M == DECR_SHOOT) {
 				strcpy(outS, "Shooting time is now: ");
 				strcat(outS, itoa(shootMs, tmpC, 10));
@@ -137,12 +150,47 @@ int main(void)
 			changeT_M = INC_DEC_IDLE_STATE;
 			PutString_DMA_USART1((const char *)outS, (char *) txbuff);
 			break;
-		case START:
+		case WRK:
+			while (wrkCounter < ATTEMPTS_MAX * WRK_STATES_NUM) {
+				if (wrkCounter % WRK_STATES_NUM == BEGIN_SHOOT) {
+					cmd = 3;
+					OutputBus_Set(cmd);
+					TIM10secInt_Set(shootMs);
+					PutString_DMA_USART1("Shoot!\r\n", (char *) txbuff);
+					wrkCounter++;
+				} else if (wrkCounter % WRK_STATES_NUM == BEGIN_WAIT) {
+					OutputBus_Clear();
+					TIM10secInt_Set(waitMs);
+					PutString_DMA_USART1("Wait!\r\n", (char *) txbuff);
+					wrkCounter++;
+				}
+			}
+			GPIOE->BSRR ^= GPIO_BSRR_BS_11;
+			status_M = FIN;
 			break;
+		case FIN:
+			if (!fin_F) {
+				PutString_DMA_USART1("Finished!\r\n"
+					"To repeat the game press \"START\" button.\r\n"
+					"To change timings before new game press \"RESTART\""
+					" button.\r\n", (char *) txbuff);
+				fin_F = 1;
+			} else {
+				if (rsetButtonPressed_F) {
+					status_M = INI;
+					fin_F = 0;
+					wrkCounter = 0;
+				}
+			}
+			break;
+		default:
+			error = 1;
 		}
-		uint8_t createV = 8;
-		createV++;
+//		uint8_t createV = 8;
+//		createV++;
 	}
+
+	while(1);
 }
 
 
@@ -471,7 +519,7 @@ void BBFilter_Ini(void)
   * @param  msT: interval duration in ms (max 10000!!!)
   * @retval Nope
   */
-void TIM10secInt_Ini(uint16_t msT)
+void TIM10secInt_Ini(void)
 {
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStruct;
 
@@ -480,7 +528,6 @@ void TIM10secInt_Ini(uint16_t msT)
 	TIM_TimeBaseStructInit(&TIM_TimeBaseInitStruct);
 	TIM_TimeBaseInitStruct.TIM_Prescaler =
 				  (uint16_t)(((SystemCoreClock / 2) / (uint16_t)2000) - 1);
-	TIM_TimeBaseInitStruct.TIM_Period = (2 * msT) - 1;
 	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStruct);
 
 	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
@@ -491,10 +538,20 @@ void TIM10secInt_Ini(uint16_t msT)
 	NVIC_InitStruct.NVIC_IRQChannel = TIM2_IRQn;
 	NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStruct);
-
-	TIM2->CR1 |= TIM_CR1_CEN;
 }
 
+/*!
+  * @brief  Set TIM2 period
+  * @note	Timer to make regular iterations
+  * 		Max interval between iterations = 10s, min = 1 ms
+  * @param  msT: interval duration in ms (max 10000!!!)
+  * @retval Nope
+  */
+void TIM10secInt_Set(uint16_t msT) {
+	TIM2->CR1 &= ~TIM_CR1_CEN;
+	TIM2->ARR = (2 * msT) - 1;
+	TIM2->CR1 |= TIM_CR1_CEN;
+}
 
 /* Extern functions ---------------------------------------------------------*/
 /**

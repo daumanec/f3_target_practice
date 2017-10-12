@@ -20,20 +20,26 @@ typedef enum {
 	DECR_SHOOT,
 	INCR_WAIT,
 	DECR_WAIT,
-} changeT_Enum;
+} changeT;
 
 typedef enum {
 	INI = 1,
-	START,
-	STOP,
+	WRK,
+	FIN
 } progStat;
+
 /* Public define ------------------------------------------------------------*/
 #define DBG
 
+#define WRK_STATES_NUM	4
+
+#define ATTEMPTS_MAX	2
+
 /* Public macro -------------------------------------------------------------*/
 /* Public variables ---------------------------------------------------------*/
-volatile changeT_Enum changeT_M;
-volatile progStat status_M;
+//volatile changeT changeT_M;
+//volatile progStat status_M;
+//volatile uint8_t wrkCounter = 0;
 
 /* Public function prototypes -----------------------------------------------*/
 void TimingDelay_Decrement(void);

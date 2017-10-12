@@ -39,6 +39,10 @@ extern volatile uint8_t rsetButtonPressed_F;
 extern volatile uint8_t newInputData_F;
 extern volatile int8_t inputData;
 
+extern volatile changeT changeT_M;
+extern volatile progStat status_M;
+extern volatile uint8_t wrkCounter;
+
 /* Private variables ---------------------------------------------------------*/
 uint8_t bounceFiltered_F = 1;
 /* Private function prototypes -----------------------------------------------*/
@@ -166,8 +170,8 @@ void EXTI0_IRQHandler(void)
 		// Clear the EXTI line pending bit
 		EXTI_ClearITPendingBit(EXTI_Line0);
 
-		if (bounceFiltered_F) {
-			status_M = START;
+		if (bounceFiltered_F && status_M == INI) {
+			status_M = WRK;
 			BBFilter(&bounceFiltered_F);
 		}
 	}
@@ -187,7 +191,7 @@ void EXTI1_IRQHandler(void)
 		// Clear the EXTI line pending bit
 		EXTI_ClearITPendingBit(EXTI_Line1);
 
-		if (bounceFiltered_F) {
+		if (bounceFiltered_F && status_M == INI) {
 			if (GPIOA->IDR & GPIO_IDR_3) {
 				changeT_M = INCR_SHOOT;
 			} else {
@@ -212,7 +216,7 @@ void EXTI2_TS_IRQHandler(void)
 		// Clear the EXTI line pending bit
 		EXTI_ClearITPendingBit(EXTI_Line2);
 
-		if (bounceFiltered_F) {
+		if (bounceFiltered_F && status_M == INI) {
 			if (GPIOA->IDR & GPIO_IDR_3) {
 				changeT_M = DECR_SHOOT;
 			} else {
@@ -237,11 +241,9 @@ void EXTI4_IRQHandler(void)
 		// Clear the EXTI line pending bit
 		EXTI_ClearITPendingBit(EXTI_Line4);
 
-		if (bounceFiltered_F) {
-			if (status_M == STOP) {
-				status_M = INI;
-			}
-//			rsetButtonPressed_F = 1;
+		if (bounceFiltered_F && status_M == FIN) {
+//			status_M = INI;
+			rsetButtonPressed_F = 1;
 			BBFilter(&bounceFiltered_F);
 		}
 	}
@@ -255,27 +257,22 @@ void EXTI4_IRQHandler(void)
 void EXTI9_5_IRQHandler(void)
 {
 	//Test on EXTI transfer complete interrupt
+	if (((EXTI_GetITStatus(EXTI_Line7) == SET) ||
+		(EXTI_GetITStatus(EXTI_Line8) == SET) ||
+		(EXTI_GetITStatus(EXTI_Line9) == SET)) &&
+		(status_M == WRK)) {
+		if (!newInputData_F) {
+			inputData = InputBus_CaptureState();
+			newInputData_F = 1;
+//			OutputBus_Clear();
+		}
+	}
 	if (EXTI_GetITStatus(EXTI_Line7) == SET) {
 		EXTI_ClearITPendingBit(EXTI_Line7);
-		if (!newInputData_F) {
-			newInputData_F = 1;
-			inputData = InputBus_CaptureState();
-			OutputBus_Clear();
-		}
 	} else if (EXTI_GetITStatus(EXTI_Line8) == SET) {
 		EXTI_ClearITPendingBit(EXTI_Line8);
-		if (!newInputData_F) {
-			newInputData_F = 1;
-			inputData = InputBus_CaptureState();
-			OutputBus_Clear();
-		}
 	} else if (EXTI_GetITStatus(EXTI_Line9) == SET) {
 		EXTI_ClearITPendingBit(EXTI_Line9);
-		if (!newInputData_F) {
-			newInputData_F = 1;
-			inputData = InputBus_CaptureState();
-			OutputBus_Clear();
-		}
 	}
 }
 
@@ -301,9 +298,12 @@ void TIM6_DAC_IRQHandler(void)
 void TIM2_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update)) {
+		TIM2->CR1 &= ~TIM_CR1_CEN;
+		if (status_M == WRK) {
+			wrkCounter++;
+			GPIOE->ODR ^= GPIO_ODR_8;
+		}
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
-		GPIOE->ODR ^= GPIO_BSRR_BS_11;
-
 	}
 }
 
@@ -316,7 +316,7 @@ void DMA1_Channel4_IRQHandler (void)
 {
 	if (DMA_GetITStatus(DMA1_IT_TC4)) {
 		DMA_ClearITPendingBit(DMA1_IT_TC4);
-		GPIOE->ODR ^= GPIO_ODR_8;
+//		GPIOE->ODR ^= GPIO_ODR_8;
 		DMA_Cmd(DMA1_Channel4, DISABLE);
 	}
 }
