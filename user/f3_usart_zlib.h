@@ -13,7 +13,7 @@
 /* Private define ------------------------------------------------------------*/
 #define USART1_BAUDRATE			9600
 #define RX_PACKET_MAX_LENGTH	10
-#define TX_PACKET_MAX_LENGTH	50
+#define TX_PACKET_MAX_LENGTH	150
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* Export function prototypes -----------------------------------------------*/
