@@ -78,6 +78,7 @@ void ErrorHandler();
 void BBFilter_Ini(void);
 void TIM10secInt_Ini(void);
 void TIM10secInt_Set(uint16_t msT);
+uint8_t Get_Random(void);
 
 // ##############################  MAIN  ###################################
 int main(void)
@@ -106,6 +107,7 @@ int main(void)
 	OutputBus_Ini();
 	InputBus_Ini();
 	TIM10secInt_Ini();
+	ADC1_Ini();
 
 	// Init values
 	status_M = INI;
@@ -153,7 +155,7 @@ int main(void)
 		case WRK:
 			while (wrkCounter < ATTEMPTS_MAX * WRK_STATES_NUM) {
 				if (wrkCounter % WRK_STATES_NUM == BEGIN_SHOOT) {
-					cmd = 3;
+					cmd = Get_Random();
 					OutputBus_Set(cmd);
 					TIM10secInt_Set(shootMs);
 					PutString_DMA_USART1("Shoot!\r\n", (char *) txbuff);
@@ -551,6 +553,24 @@ void TIM10secInt_Set(uint16_t msT) {
 	TIM2->CR1 &= ~TIM_CR1_CEN;
 	TIM2->ARR = (2 * msT) - 1;
 	TIM2->CR1 |= TIM_CR1_CEN;
+}
+
+/*!
+ * @brief	Function, that gives back random number for the given range
+ * @note	It uses internal ADC channel, to take some noise from vrefint
+ * 			The range is yet fixed for 1...5
+ * @param	Nope
+ * @retval	Nope
+ */
+uint8_t Get_Random(void)
+{
+	uint16_t  adcConvertedValue = 0;
+	/* Test EOC flag */
+	while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
+	/* Get ADC1 converted data */
+	adcConvertedValue = ADC_GetConversionValue(ADC1);
+
+	return (uint8_t)((adcConvertedValue % 5) + 1);
 }
 
 /* Extern functions ---------------------------------------------------------*/

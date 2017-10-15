@@ -11,8 +11,13 @@
 #include "stm32f30x_tim.h"
 #include "stm32f30x_misc.h"
 #include "stm32f30x_it.h"
+
 #include "button.h"
+#include "f3_usart_zlib.h"
+#include "f3_adc_zlib.h"
+
 #include "tests.h"
+
 /* Private typedef -----------------------------------------------------------*/
 typedef enum {
 	INC_DEC_IDLE_STATE = 0,
