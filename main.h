@@ -13,6 +13,8 @@
 #include "stm32f30x_it.h"
 #include "button.h"
 #include "tests.h"
+
+#include "lcd.h"
 /* Private typedef -----------------------------------------------------------*/
 typedef enum {
 	INC_DEC_IDLE_STATE = 0,
