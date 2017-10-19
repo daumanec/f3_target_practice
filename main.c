@@ -120,7 +120,6 @@ int main(void)
 	strcpy(outS, "Default waiting time is: ");
 	strcat(outS, itoa(waitMs, tmpC, 10));
 	strcat(outS, " ms\r\n");
-//	Delay(10);
 	PutString_DMA_USART1((const char *)outS, (char *) txbuff);
 
 	while (!error) {
@@ -156,6 +155,10 @@ int main(void)
 			while (wrkCounter < ATTEMPTS_MAX * WRK_STATES_NUM) {
 				if (wrkCounter % WRK_STATES_NUM == BEGIN_SHOOT) {
 					cmd = Get_Random();
+					strcpy(outS, "Target number is: ");
+					strcat(outS, itoa(cmd, tmpC, 10));
+					strcat(outS, "\r\n");
+					PutString_DMA_USART1((const char *)outS, (char *) txbuff);
 					OutputBus_Set(cmd);
 					TIM10secInt_Set(shootMs);
 					PutString_DMA_USART1("Shoot!\r\n", (char *) txbuff);
