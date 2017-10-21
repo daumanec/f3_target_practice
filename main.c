@@ -106,6 +106,8 @@ int main(void)
 	OutputBus_Ini();
 	InputBus_Ini();
 	TIM10secInt_Ini();
+	InitializeLCD();
+
 
 	// Init values
 	status_M = INI;
@@ -120,6 +122,8 @@ int main(void)
 	strcat(outS, " ms\r\n");
 //	Delay(10);
 	PutString_DMA_USART1((const char *)outS, (char *) txbuff);
+
+	test_LCD();
 
 	while (!error) {
 		switch (status_M){
