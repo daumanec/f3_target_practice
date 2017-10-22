@@ -144,3 +144,25 @@ int8_t test_Usart2IT(uint8_t* tx)
 	int8_t a = 10;
 	return a;
 }
+
+void test_RandomGen(char *outS, char *tmpC, uint8_t *txbuff)
+{
+	uint8_t cmd = 0;
+	uint16_t  adcConvertedValue = 0;
+	while(1) {
+
+		/* Test EOC flag */
+		while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
+		/* Get ADC1 converted data */
+		adcConvertedValue = ADC_GetConversionValue(ADC1);
+
+		cmd = (uint8_t)((adcConvertedValue % 5) + 1);
+		strcpy(outS, "Target number is: ");
+		strcat(outS, itoa(cmd, tmpC, 10));
+		strcat(outS, ", adc code = ");
+		strcat(outS, itoa(adcConvertedValue, tmpC, 10));
+		strcat(outS, "\r\n");
+		PutString_DMA_USART1((const char *)outS, (char *) txbuff);
+		Delay(100);
+	}
+}

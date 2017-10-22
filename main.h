@@ -52,6 +52,7 @@ void BBFilter(uint8_t* status);
 void Delay(volatile uint32_t nTime);
 int8_t InputBus_CaptureState(void);
 void OutputBus_Clear(void);
+uint8_t Get_Random(void);
 /* Public functions ---------------------------------------------------------*/
 
 #endif

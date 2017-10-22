@@ -106,8 +106,9 @@ uint32_t ADC1_Ini(void)
 	ADC_CommonInit(ADC1, &ADC_CommonInitStructure);
 
 	// Enable the Vrefint channel
-	ADC_VrefintCmd(ADC1, ENABLE);
-
+//	ADC_VrefintCmd(ADC1, ENABLE);
+	ADC1_2->CCR |= ADC12_CCR_VREFEN;
+	Delay(1);
 	// ADC configuration register & regular sequence register
 	// Initialize ADC structure with default settings (they are right one for this task)
 	ADC_StructInit(&ADC_InitStructure);

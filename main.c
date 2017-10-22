@@ -109,6 +109,8 @@ int main(void)
 	TIM10secInt_Ini();
 	ADC1_Ini();
 
+	test_RandomGen(outS, tmpC, txbuff);
+
 	// Init values
 	status_M = INI;
 	shootMs = SHOOT_MS_DEFAULT;
