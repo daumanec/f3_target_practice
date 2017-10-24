@@ -11,6 +11,7 @@
 /* Private variables ---------------------------------------------------------*/
 /* Export function prototypes -----------------------------------------------*/
 uint32_t ADC1_Ini(void);
+void ADC1_DMA_Init (uint16_t *adc1_dmaField);
 uint32_t ADC1_J_Ini(void);
 void ADC1_StartRegularConversion(void);
 void ADC_J_Get12bitV(ADC_TypeDef* ADCx, uint8_t chs, float *adcV);

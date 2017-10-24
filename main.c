@@ -54,13 +54,14 @@ volatile changeT changeT_M;
 volatile progStat status_M;
 volatile uint8_t wrkCounter = 0;
 
-uint16_t shootMs;
-uint16_t waitMs;
+volatile uint16_t adcCodes[2] = {0};
 
 /* Private variables ---------------------------------------------------------*/
 uint32_t error = 0;
 uint8_t progStatus = INI;
 uint8_t txbuff[TX_PACKET_MAX_LENGTH];
+uint16_t shootMs;
+uint16_t waitMs;
 
 /* Private function prototypes -----------------------------------------------*/
 void NVIC_Priority_Config (void);
@@ -108,6 +109,7 @@ int main(void)
 	InputBus_Ini();
 	TIM10secInt_Ini();
 	ADC1_Ini();
+//	ADC1_DMA_Init(adcCodes);
 
 	test_RandomGen(outS, tmpC, txbuff);
 

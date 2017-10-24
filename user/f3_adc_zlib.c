@@ -4,42 +4,42 @@
 ////	Init and enable DMA1 Channel1 in circular mode
 ////	with transfer complete on ADC1 interrupt
 ////-----------------------------------------------------------------------------
-//void ADC1_DMA_Init (uint16_t *adc1_dmaField)
-//{
-//	DMA_InitTypeDef DMA_InitStructure;
-//
-//	//Clock DMA
-//	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
-//	// Configure structure with factory settings
-//	DMA_DeInit(DMA1_Channel1);
-//	// Set the peripheral register address in the DMA_CPARx register
-//	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&ADC1->DR;
-//	// Set the memory address in the DMA_CMARx register
-//	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)adc1_dmaField;
-//	// Configure data transfer direction in the DMA_CCRx register
-//	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
-//	// Configure the total number of data to be transferred in the DMA_CNDTRx
-//	DMA_InitStructure.DMA_BufferSize = 2;
-//	// Configure peripheral & memory incremented mode in the DMA_CCRx register
-//	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-//	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-//	// Configure peripheral & memory data size in the DMA_CCRx register
-//	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
-//	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
-//	// Configure circular mode in the DMA_CCRx register
-//	DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
-//	// Configure the channel priority using the PL[1:0] bits in the DMA_CCRx register
-//	DMA_InitStructure.DMA_Priority = DMA_Priority_Low;
-//	// Disable DMA_memory_to_memory in the DMA_CCRx register
-//	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
-//	DMA_Init(DMA1_Channel1, &DMA_InitStructure);
-//
-//	// Enable DMA1 Channel1 Transfer Complete interrupt
+void ADC1_DMA_Init (uint16_t *adc1_dmaField)
+{
+	DMA_InitTypeDef DMA_InitStructure;
+
+	//Clock DMA
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+	// Configure structure with factory settings
+	DMA_DeInit(DMA1_Channel1);
+	// Set the peripheral register address in the DMA_CPARx register
+	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&ADC1->DR;
+	// Set the memory address in the DMA_CMARx register
+	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)adc1_dmaField;
+	// Configure data transfer direction in the DMA_CCRx register
+	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
+	// Configure the total number of data to be transferred in the DMA_CNDTRx
+	DMA_InitStructure.DMA_BufferSize = 2;
+	// Configure peripheral & memory incremented mode in the DMA_CCRx register
+	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+	// Configure peripheral & memory data size in the DMA_CCRx register
+	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
+	// Configure circular mode in the DMA_CCRx register
+	DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
+	// Configure the channel priority using the PL[1:0] bits in the DMA_CCRx register
+	DMA_InitStructure.DMA_Priority = DMA_Priority_Low;
+	// Disable DMA_memory_to_memory in the DMA_CCRx register
+	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
+	DMA_Init(DMA1_Channel1, &DMA_InitStructure);
+
+	// Enable DMA1 Channel1 Transfer Complete interrupt
 //	DMA_ITConfig(DMA1_Channel1, DMA_IT_TC, ENABLE);
-//
-//	// Activate the channel by setting the ENABLE bit in the DMA_CCRx register
-//	DMA_Cmd(DMA1_Channel1, ENABLE);
-//}
+
+	// Activate the channel by setting the ENABLE bit in the DMA_CCRx register
+	DMA_Cmd(DMA1_Channel1, ENABLE);
+}
 
 ////-----------------------------------------------------------------------------
 ////	NVIC for DMA1 Channel1
@@ -108,18 +108,21 @@ uint32_t ADC1_Ini(void)
 	// Enable the Vrefint channel
 //	ADC_VrefintCmd(ADC1, ENABLE);
 	ADC1_2->CCR |= ADC12_CCR_VREFEN;
+	ADC1_2->CCR |= ADC12_CCR_TSEN;
 	Delay(1);
 	// ADC configuration register & regular sequence register
 	// Initialize ADC structure with default settings (they are right one for this task)
 	ADC_StructInit(&ADC_InitStructure);
 	ADC_InitStructure.ADC_ContinuousConvMode = ADC_ContinuousConvMode_Enable;
+	ADC_InitStructure.ADC_NbrOfRegChannel = 2;
 	ADC_Init(ADC1, &ADC_InitStructure);
 	// Enables DMA in circular mode
 //	ADC1->CFGR |= (uint32_t)0x00000003;
 	// Configurate regular sequence register (ADCx_SQR) & Sample time selection (ADCx_SMPRx)
 	// Total conversion time is calculated as follows: Tconv = Sampling time + 12.5 cycles
 	// ADC1 internal channel 18 configuration
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_18, 1, ADC_SampleTime_601Cycles5);
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_18, 1, ADC_SampleTime_4Cycles5);	// vref
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_16, 2, ADC_SampleTime_4Cycles5);	// tsen
 	// Enable ADC1
 	ADC_Cmd(ADC1, ENABLE);
 	/* wait for ADRDY */
