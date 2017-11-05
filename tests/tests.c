@@ -144,3 +144,13 @@ int8_t test_Usart2IT(uint8_t* tx)
 	int8_t a = 10;
 	return a;
 }
+
+int8_t test_LCD()
+{
+	ClearLCDScreen();
+	Cursor(0,0);
+	PrintStr("Hello! I am a");
+	Cursor(1,0);
+	PrintStr("target trainer!");
+	return 1;
+}

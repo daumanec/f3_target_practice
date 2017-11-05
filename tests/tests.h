@@ -6,6 +6,7 @@
 #include "stm32f30x.h"
 #include "main.h"
 #include "f3_usart_zlib.h"
+#include "lcd.h"
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -15,6 +16,7 @@ int8_t test_ResultLedsIni(void);
 void test_LedsVisualy(void);
 int8_t test_Button(uint8_t *press_F);
 int8_t test_Switch(void);
+int8_t test_LCD();
 /* Private functions ---------------------------------------------------------*/
 
 

@@ -13,6 +13,8 @@
 #include "stm32f30x_it.h"
 #include "button.h"
 #include "tests.h"
+
+#include "lcd.h"
 /* Private typedef -----------------------------------------------------------*/
 typedef enum {
 	INC_DEC_IDLE_STATE = 0,
@@ -23,6 +25,7 @@ typedef enum {
 } changeT;
 
 typedef enum {
+	PREINI = 0,
 	INI = 1,
 	WRK,
 	FIN
@@ -33,7 +36,7 @@ typedef enum {
 
 #define WRK_STATES_NUM	4
 
-#define ATTEMPTS_MAX	2
+#define ATTEMPTS_MAX	5
 
 /* Public macro -------------------------------------------------------------*/
 /* Public variables ---------------------------------------------------------*/

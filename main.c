@@ -84,8 +84,9 @@ int main(void)
 {
 	uint8_t cmd;
 	char outS[50];
+	char lcdS[16];
 	char tmpC[10];
-	uint8_t fin_F = 0;
+	uint8_t endIndic_F = 0;
 
 	SysTick_Config(SystemCoreClock / 100);
 	NVIC_Priority_Config();
@@ -106,23 +107,39 @@ int main(void)
 	OutputBus_Ini();
 	InputBus_Ini();
 	TIM10secInt_Ini();
+	InitializeLCD();
 
-	// Init values
-	status_M = INI;
-	shootMs = SHOOT_MS_DEFAULT;
-	strcpy(outS, "Default shooting time is: ");
-	strcat(outS, itoa(shootMs, tmpC, 10));
-	strcat(outS, " ms\r\n");
-	PutString_DMA_USART1((const char *)outS, (char *) txbuff);
-	waitMs = WAIT_MS_DEFAULT;
-	strcpy(outS, "Default waiting time is: ");
-	strcat(outS, itoa(waitMs, tmpC, 10));
-	strcat(outS, " ms\r\n");
-//	Delay(10);
-	PutString_DMA_USART1((const char *)outS, (char *) txbuff);
+	test_LCD();	// LCD greeting
+	Delay(100);
+	status_M = PREINI;
 
 	while (!error) {
 		switch (status_M){
+		case PREINI:
+			// Init values
+			shootMs = SHOOT_MS_DEFAULT;
+			strcpy(outS, "Default shooting time is: ");
+			strcat(outS, itoa(shootMs, tmpC, 10));
+			strcat(outS, " ms\r\n");
+			PutString_DMA_USART1((const char *)outS, (char *) txbuff);
+			waitMs = WAIT_MS_DEFAULT;
+			strcpy(outS, "Default waiting time is: ");
+			strcat(outS, itoa(waitMs, tmpC, 10));
+			strcat(outS, " ms\r\n");
+//			Delay(10);
+			PutString_DMA_USART1((const char *)outS, (char *) txbuff);
+			ClearLCDScreen();
+			Cursor(0,0);
+			strcpy(lcdS, "Shoot: ");
+			strcat(lcdS, itoa(shootMs, tmpC, 10));
+			strcat(lcdS, " ms");
+			PrintStr(lcdS);
+			Cursor(1,0);
+			strcpy(lcdS, " Wait: ");
+			strcat(lcdS, itoa(waitMs, tmpC, 10));
+			strcat(lcdS, " ms");
+			PrintStr(lcdS);
+			status_M = INI;
 		case INI:
 			if (changeT_M == INCR_SHOOT) {
 				if (shootMs < SHOOT_MS_MAX)
@@ -142,15 +159,47 @@ int main(void)
 			if (changeT_M == INCR_SHOOT || changeT_M == DECR_SHOOT) {
 				strcpy(outS, "Shooting time is now: ");
 				strcat(outS, itoa(shootMs, tmpC, 10));
+//				while (ClearString(1)) {
+//					// TODO wrong function input
+//				}
+				Cursor(0,0);
+				if (shootMs < 1000) {
+					strcpy(lcdS, "Shoot:  ");
+				} else {
+					strcpy(lcdS, "Shoot: ");
+				}
+				strcat(lcdS, itoa(shootMs, tmpC, 10));
+				strcat(lcdS, " ms");
+				PrintStr(lcdS);
 			} else {
 				strcpy(outS, "Waiting time is now: ");
 				strcat(outS, itoa(waitMs, tmpC, 10));
+//				while (ClearString(2)) {
+//					// TODO wrong function input
+//				}
+				Cursor(1,0);
+				if (waitMs < 1000) {
+					strcpy(lcdS, " Wait:  ");
+				} else {
+					strcpy(lcdS, " Wait: ");
+				}
+				strcat(lcdS, itoa(waitMs, tmpC, 10));
+				strcat(lcdS, " ms");
+				PrintStr(lcdS);
 			}
 			strcat(outS, " ms\r\n");
 			changeT_M = INC_DEC_IDLE_STATE;
 			PutString_DMA_USART1((const char *)outS, (char *) txbuff);
 			break;
 		case WRK:
+			PutString_DMA_USART1("Begin the game!\r\n", (char *) txbuff);
+			ClearLCDScreen();
+			Cursor(0,0);
+			PrintStr("Ready ");
+			Delay(100);
+			PrintStr("steady ");
+			Delay(100);
+			PrintStr("GO!");
 			while (wrkCounter < ATTEMPTS_MAX * WRK_STATES_NUM) {
 				if (wrkCounter % WRK_STATES_NUM == BEGIN_SHOOT) {
 					cmd = 3;
@@ -167,19 +216,24 @@ int main(void)
 			}
 			GPIOE->BSRR ^= GPIO_BSRR_BS_11;
 			status_M = FIN;
+			endIndic_F = 1;	// Indicate game over
 			break;
 		case FIN:
-			if (!fin_F) {
+			if (endIndic_F) {
 				PutString_DMA_USART1("Finished!\r\n"
 					"To repeat the game press \"START\" button.\r\n"
 					"To change timings before new game press \"RESTART\""
 					" button.\r\n", (char *) txbuff);
-				fin_F = 1;
+				ClearLCDScreen();
+				Cursor(0,0);
+				PrintStr("Game over!");
+				Cursor(1,0);
+				PrintStr("Restart/Reset?");
+				endIndic_F = 0;
 			} else {
 				if (rsetButtonPressed_F) {
-					status_M = INI;
-					fin_F = 0;
-					wrkCounter = 0;
+					rsetButtonPressed_F = 0;
+					status_M = PREINI;
 				}
 			}
 			break;
