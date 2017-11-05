@@ -170,7 +170,8 @@ void EXTI0_IRQHandler(void)
 		// Clear the EXTI line pending bit
 		EXTI_ClearITPendingBit(EXTI_Line0);
 
-		if (bounceFiltered_F && status_M == INI) {
+		if (bounceFiltered_F && (status_M == INI || status_M == FIN)) {
+			wrkCounter = 0;	// reinit working counters
 			status_M = WRK;
 			BBFilter(&bounceFiltered_F);
 		}

@@ -80,6 +80,19 @@ void ClearLCDScreen()
     SendByte(0x02, 0);
 }
 
+int8_t ClearString(uint8_t rowN)
+{
+	if (rowN != 1 && rowN != 2) {
+		return -1;
+	}
+	if (rowN == 1) {
+		SendByte(0x01, 0);
+	} else {
+		SendByte(0x02, 0);
+	}
+	return 0;
+}
+
 //---Инициализация дисплея---//
 void InitializeLCD(void)
 {

@@ -9,6 +9,7 @@
 void InitializeLCD(void);
 void PrintStr(char *Text);
 void ClearLCDScreen();
+int8_t ClearString(uint8_t rowN);
 void Cursor(char Row, char Col);
 
 #endif
