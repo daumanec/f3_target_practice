@@ -111,7 +111,7 @@ int main(void)
 	ADC1_Ini();
 //	ADC1_DMA_Init(adcCodes);
 
-	test_RandomGen(outS, tmpC, txbuff);
+//	test_RandomGen(outS, tmpC, txbuff);
 
 	// Init values
 	status_M = INI;
@@ -571,13 +571,18 @@ void TIM10secInt_Set(uint16_t msT) {
  */
 uint8_t Get_Random(void)
 {
-	uint16_t  adcConvertedValue = 0;
+	static uint16_t cmd_old = 0;
+	uint16_t  cmd,adcConvertedValue = 0;
 	/* Test EOC flag */
-	while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
-	/* Get ADC1 converted data */
-	adcConvertedValue = ADC_GetConversionValue(ADC1);
-
-	return (uint8_t)((adcConvertedValue % 5) + 1);
+//	while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
+	do {
+		/* Get ADC1 converted data */
+		while (!(ADC1->ISR & ADC_ISR_EOC));
+		adcConvertedValue = ADC_GetConversionValue(ADC1);
+		cmd = (uint8_t)((adcConvertedValue % 5) + 1);
+	} while (cmd == cmd_old);
+	cmd_old = cmd;
+	return cmd;
 }
 
 /* Extern functions ---------------------------------------------------------*/

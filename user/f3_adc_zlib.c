@@ -69,12 +69,9 @@ uint32_t ADC1_Ini(void)
 	ADC_InitTypeDef ADC_InitStructure;
 	uint32_t calibration_value = 0;
 
-//	RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
-//	GPIO_InitTypeDef GPIO_Init_ADC;
-//	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 ;
-//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
-//	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
-//	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
+	GPIOC->MODER |= GPIO_MODER_MODER1;
+	GPIOC->PUPDR &= ~GPIO_PUPDR_PUPDR1;
 
 	// Configure clock
 	RCC_ADCCLKConfig(RCC_ADC12PLLCLK_Div256);
@@ -107,22 +104,23 @@ uint32_t ADC1_Ini(void)
 
 	// Enable the Vrefint channel
 //	ADC_VrefintCmd(ADC1, ENABLE);
-	ADC1_2->CCR |= ADC12_CCR_VREFEN;
-	ADC1_2->CCR |= ADC12_CCR_TSEN;
+//	ADC1_2->CCR |= ADC12_CCR_VREFEN;
+//	ADC1_2->CCR |= ADC12_CCR_TSEN;
 	Delay(1);
 	// ADC configuration register & regular sequence register
 	// Initialize ADC structure with default settings (they are right one for this task)
 	ADC_StructInit(&ADC_InitStructure);
 	ADC_InitStructure.ADC_ContinuousConvMode = ADC_ContinuousConvMode_Enable;
-	ADC_InitStructure.ADC_NbrOfRegChannel = 2;
+	ADC_InitStructure.ADC_NbrOfRegChannel = 1;
 	ADC_Init(ADC1, &ADC_InitStructure);
 	// Enables DMA in circular mode
 //	ADC1->CFGR |= (uint32_t)0x00000003;
 	// Configurate regular sequence register (ADCx_SQR) & Sample time selection (ADCx_SMPRx)
 	// Total conversion time is calculated as follows: Tconv = Sampling time + 12.5 cycles
 	// ADC1 internal channel 18 configuration
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_18, 1, ADC_SampleTime_4Cycles5);	// vref
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_16, 2, ADC_SampleTime_4Cycles5);	// tsen
+//	ADC_RegularChannelConfig(ADC1, ADC_Channel_18, 1, ADC_SampleTime_4Cycles5);	// vref
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_7, 1, ADC_SampleTime_4Cycles5);
+//	ADC_RegularChannelConfig(ADC1, ADC_Channel_16, 2, ADC_SampleTime_4Cycles5);	// tsen
 	// Enable ADC1
 	ADC_Cmd(ADC1, ENABLE);
 	/* wait for ADRDY */

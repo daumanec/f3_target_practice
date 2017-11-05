@@ -147,21 +147,35 @@ int8_t test_Usart2IT(uint8_t* tx)
 
 void test_RandomGen(char *outS, char *tmpC, uint8_t *txbuff)
 {
-	uint8_t cmd = 0;
+	uint8_t cmd, cmd_old = 0;
 	uint16_t  adcConvertedValue1 = 0, adcConvertedValue2 = 0;
 	Delay(100);
 	while(1) {
 
 		/* Test EOC flag */
 		while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
-		/* Get ADC1 converted data */
-		while (!(ADC1->ISR & ADC_ISR_EOC));
-		adcConvertedValue1 = ADC_GetConversionValue(ADC1);
-		while (!(ADC1->ISR & ADC_ISR_EOC));
-		adcConvertedValue2 = ADC_GetConversionValue(ADC1);
 
+		/* Get ADC1 converted data */
+		while (cmd == cmd_old) {
+			while (!(ADC1->ISR & ADC_ISR_EOC));
+			adcConvertedValue1 = ADC_GetConversionValue(ADC1);
+//			while (!(ADC1->ISR & ADC_ISR_EOC));
+//			adcConvertedValue2 = ADC_GetConversionValue(ADC1);
+			cmd = (uint8_t)((adcConvertedValue1 % 5) + 1);
+//			cmd = (uint8_t)((((uint32_t)adcConvertedValue1*adcConvertedValue2) % 5) + 1);
+		}
 //		cmd = (uint8_t)((adcConvertedValue1 % 5) + 1);
-		cmd = (uint8_t)((((uint32_t)adcConvertedValue1*adcConvertedValue2) % 5) + 1);
+
+//		cmd = (uint8_t)((((uint32_t)adcConvertedValue1*adcConvertedValue2) % 5) + 1);
+//		if (cmd == cmd_old) {
+//			if (cmd < 3) {
+//				cmd++;
+//			} else {
+//				cmd--;
+//			}
+//		}
+		cmd_old = cmd;
+
 		strcpy(outS, "Target number is: ");
 		strcat(outS, itoa(cmd, tmpC, 10));
 		strcat(outS, ", adc codes = ");
