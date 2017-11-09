@@ -106,7 +106,7 @@ int main(void)
 	Switcher_Ini();
 	OutputBus_Ini();
 	InputBus_Ini();
-	TIM10secInt_Ini();
+	TIM10secInt_Ini();	// TODO wrong timing (smaller, than should be)
 	InitializeLCD();
 
 	test_LCD();	// LCD greeting
