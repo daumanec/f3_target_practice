@@ -72,7 +72,6 @@
     <Component id="1205" name="cmsis_boot" path="" type="2"/>
     <Component id="1206" name="RCC" path="" type="2"/>
     <Component id="1207" name="GPIO" path="" type="2"/>
-    <Component id="1208" name="ADC" path="" type="2"/>
     <Component id="1214" name="EXTI" path="" type="2"/>
     <Component id="1223" name="SYSCFG" path="" type="2"/>
     <Component id="1224" name="TIM" path="" type="2"/>
@@ -86,27 +85,27 @@
     <File name="cmsis_boot" path="" type="2"/>
     <File name="cmsis_lib/source/stm32f30x_exti.c" path="cmsis_lib/source/stm32f30x_exti.c" type="1"/>
     <File name="cmsis_boot/startup/startup_stm32f30x.S" path="cmsis_boot/startup/startup_stm32f30x.S" type="1"/>
-    <File name="cmsis/core_cm4_simd.h" path="cmsis/core_cm4_simd.h" type="1"/>
     <File name="cmsis_boot/startup" path="" type="2"/>
+    <File name="cmsis/core_cm4_simd.h" path="cmsis/core_cm4_simd.h" type="1"/>
     <File name="cmsis_lib/include/stm32f30x_dma.h" path="cmsis_lib/include/stm32f30x_dma.h" type="1"/>
     <File name="stm32f30x_it.h" path="stm32f30x_it.h" type="1"/>
-    <File name="cmsis_lib/source/stm32f30x_misc.c" path="cmsis_lib/source/stm32f30x_misc.c" type="1"/>
     <File name="cmsis/core_cmFunc.h" path="cmsis/core_cmFunc.h" type="1"/>
+    <File name="cmsis_lib/source/stm32f30x_misc.c" path="cmsis_lib/source/stm32f30x_misc.c" type="1"/>
     <File name="cmsis/core_cm4.h" path="cmsis/core_cm4.h" type="1"/>
-    <File name="cmsis_lib/include/stm32f30x_rcc.h" path="cmsis_lib/include/stm32f30x_rcc.h" type="1"/>
-    <File name="main.h" path="main.h" type="1"/>
     <File name="cmsis_lib/include/stm32f30x_tim.h" path="cmsis_lib/include/stm32f30x_tim.h" type="1"/>
+    <File name="main.h" path="main.h" type="1"/>
+    <File name="cmsis_lib/include/stm32f30x_rcc.h" path="cmsis_lib/include/stm32f30x_rcc.h" type="1"/>
     <File name="tests" path="" type="2"/>
-    <File name="cmsis_lib/include/stm32f30x_adc.h" path="cmsis_lib/include/stm32f30x_adc.h" type="1"/>
     <File name="syscalls/syscalls.c" path="syscalls/syscalls.c" type="1"/>
+    <File name="cmsis_lib/include/stm32f30x_adc.h" path="cmsis_lib/include/stm32f30x_adc.h" type="1"/>
     <File name="ext_libs/lcd.h" path="ext_libs/lcd.h" type="1"/>
     <File name="cmsis_lib/source" path="" type="2"/>
     <File name="user" path="" type="2"/>
-    <File name="user/button.h" path="user/button.h" type="1"/>
     <File name="user/f3_usart_zlib.h" path="user/f3_usart_zlib.h" type="1"/>
+    <File name="user/button.h" path="user/button.h" type="1"/>
     <File name="cmsis_boot/system_stm32f30x.h" path="cmsis_boot/system_stm32f30x.h" type="1"/>
-    <File name="cmsis_lib/source/stm32f30x_adc.c" path="cmsis_lib/source/stm32f30x_adc.c" type="1"/>
     <File name="tests/tests.c" path="tests/tests.c" type="1"/>
+    <File name="cmsis_lib/source/stm32f30x_adc.c" path="cmsis_lib/source/stm32f30x_adc.c" type="1"/>
     <File name="cmsis_lib/include/stm32f30x_misc.h" path="cmsis_lib/include/stm32f30x_misc.h" type="1"/>
     <File name="cmsis_lib/include/stm32f30x_usart.h" path="cmsis_lib/include/stm32f30x_usart.h" type="1"/>
     <File name="user/f3_adc_zlib.h" path="user/f3_adc_zlib.h" type="1"/>
@@ -128,8 +127,8 @@
     <File name="cmsis_boot/system_stm32f30x_temp.c" path="../SINS_STM32_1.0/cmsis_boot/system_stm32f30x_temp.c" type="1"/>
     <File name="user/f3_adc_zlib.c" path="user/f3_adc_zlib.c" type="1"/>
     <File name="cmsis_lib/source/stm32f30x_usart.c" path="cmsis_lib/source/stm32f30x_usart.c" type="1"/>
-    <File name="ext_libs/lcd.c" path="ext_libs/lcd.c" type="1"/>
     <File name="stm32f30x_it.c" path="stm32f30x_it.c" type="1"/>
+    <File name="ext_libs/lcd.c" path="ext_libs/lcd.c" type="1"/>
     <File name="cmsis_lib/source/stm32f30x_rcc.c" path="cmsis_lib/source/stm32f30x_rcc.c" type="1"/>
     <File name="main.c" path="main.c" type="1"/>
   </Files>
