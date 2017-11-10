@@ -54,13 +54,14 @@ volatile changeT changeT_M;
 volatile progStat status_M;
 volatile uint8_t wrkCounter = 0;
 
-uint16_t shootMs;
-uint16_t waitMs;
+volatile uint16_t adcCodes[2] = {0};
 
 /* Private variables ---------------------------------------------------------*/
 uint32_t error = 0;
 uint8_t progStatus = INI;
 uint8_t txbuff[TX_PACKET_MAX_LENGTH];
+uint16_t shootMs;
+uint16_t waitMs;
 
 /* Private function prototypes -----------------------------------------------*/
 void NVIC_Priority_Config (void);
@@ -78,6 +79,7 @@ void ErrorHandler();
 void BBFilter_Ini(void);
 void TIM10secInt_Ini(void);
 void TIM10secInt_Set(uint16_t msT);
+uint8_t Get_Random(void);
 
 // ##############################  MAIN  ###################################
 int main(void)
@@ -109,9 +111,11 @@ int main(void)
 	TIM10secInt_Ini();	// TODO wrong timing (smaller, than should be)
 	InitializeLCD();
 
+	ADC1_Ini();
 	test_LCD();	// LCD greeting
 	Delay(100);
 	status_M = PREINI;
+
 
 	while (!error) {
 		switch (status_M){
@@ -202,7 +206,11 @@ int main(void)
 			PrintStr("GO!");
 			while (wrkCounter < ATTEMPTS_MAX * WRK_STATES_NUM) {
 				if (wrkCounter % WRK_STATES_NUM == BEGIN_SHOOT) {
-					cmd = 3;
+					cmd = Get_Random();
+					strcpy(outS, "Target number is: ");
+					strcat(outS, itoa(cmd, tmpC, 10));
+					strcat(outS, "\r\n");
+					PutString_DMA_USART1((const char *)outS, (char *) txbuff);
 					OutputBus_Set(cmd);
 					TIM10secInt_Set(shootMs);
 					PutString_DMA_USART1("Shoot!\r\n", (char *) txbuff);
@@ -605,6 +613,29 @@ void TIM10secInt_Set(uint16_t msT) {
 	TIM2->CR1 &= ~TIM_CR1_CEN;
 	TIM2->ARR = (2 * msT) - 1;
 	TIM2->CR1 |= TIM_CR1_CEN;
+}
+
+/*!
+ * @brief	Function, that gives back random number for the given range
+ * @note	It uses internal ADC channel, to take some noise from vrefint
+ * 			The range is yet fixed for 1...5
+ * @param	Nope
+ * @retval	Nope
+ */
+uint8_t Get_Random(void)
+{
+	static uint16_t cmd_old = 0;
+	uint16_t  cmd,adcConvertedValue = 0;
+	/* Test EOC flag */
+//	while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
+	do {
+		/* Get ADC1 converted data */
+		while (!(ADC1->ISR & ADC_ISR_EOC));
+		adcConvertedValue = ADC_GetConversionValue(ADC1);
+		cmd = (uint8_t)((adcConvertedValue % 5) + 1);
+	} while (cmd == cmd_old);
+	cmd_old = cmd;
+	return cmd;
 }
 
 /* Extern functions ---------------------------------------------------------*/
