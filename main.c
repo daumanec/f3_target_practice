@@ -18,6 +18,8 @@
 #define LED_G1 GPIO_Pin_11
 #define LED_G2 GPIO_Pin_15
 
+#define LED_CLEAR_ODR_MASK		0x03FF
+
 #define BUS_FULL_MASK			0x07
 #define BUS_MAX_VALUE_MASK		0x05
 #define OUTPUT_BUS_DATA_SHIFT	0x08
@@ -192,6 +194,7 @@ int main(void)
 			break;
 		case WRK:
 			PutString_DMA_USART1("Begin the game!\r\n", (char *) txbuff);
+			GPIOB->ODR &= ~LED_CLEAR_ODR_MASK;
 			ClearLCDScreen();
 			Cursor(0,0);
 			PrintStr("Ready ");
@@ -210,8 +213,13 @@ int main(void)
 					TIM10secInt_Set(shootMs);
 					PutString_DMA_USART1("Shoot!\r\n", (char *) txbuff);
 					wrkStat = SHOOT;
+				} else if ((wrkStat == SHOOT) && inputData) { // Handle target hitting
+					if (inputData == cmd) {
+						GPIOB->ODR |= (uint16_t)(1 << (tryNum - 1));
+					}
+					inputData = 0;	// reinit
 				} else if (wrkStat == BEGIN_WAIT) {
-					OutputBus_Clear();
+					OutputBus_Clear(); newInputData_F = 0;	// reinit
 					if (tryNum == ATTEMPTS_MAX) {
 						tryNum = 1;	wrkStat = BEGIN_SHOOT; // reinit working counters
 						break;	// end of the work cycle
@@ -243,6 +251,7 @@ int main(void)
 			} else {
 				if (rsetButtonPressed_F) {
 					rsetButtonPressed_F = 0;
+					GPIOB->ODR &= ~LED_CLEAR_ODR_MASK;
 					status_M = PREINI;
 				}
 			}
