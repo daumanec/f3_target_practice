@@ -2,12 +2,6 @@
 #include "main.h"
 
 /* Private typedef -----------------------------------------------------------*/
-typedef enum {
-	BEGIN_SHOOT = 0,
-	SHOOT,
-	BEGIN_WAIT,
-	WAIT,
-} wrkState;
 
 /* Private define ------------------------------------------------------------*/
 #define DBG
@@ -52,7 +46,7 @@ volatile progStat shoot_F = 1;
 
 volatile changeT changeT_M;
 volatile progStat status_M;
-volatile uint8_t wrkCounter = 0;
+volatile uint8_t wrkStat = 0;
 
 volatile uint16_t adcCodes[2] = {0};
 
@@ -62,6 +56,7 @@ uint8_t progStatus = INI;
 uint8_t txbuff[TX_PACKET_MAX_LENGTH];
 uint16_t shootMs;
 uint16_t waitMs;
+uint8_t tryNum = 1;
 
 /* Private function prototypes -----------------------------------------------*/
 void NVIC_Priority_Config (void);
@@ -204,8 +199,8 @@ int main(void)
 			PrintStr("steady ");
 			Delay(100);
 			PrintStr("GO!");
-			while (wrkCounter < ATTEMPTS_MAX * WRK_STATES_NUM) {
-				if (wrkCounter % WRK_STATES_NUM == BEGIN_SHOOT) {
+			while (1) {
+				if (wrkStat == BEGIN_SHOOT) {
 					cmd = Get_Random();
 					strcpy(outS, "Target number is: ");
 					strcat(outS, itoa(cmd, tmpC, 10));
@@ -214,14 +209,21 @@ int main(void)
 					OutputBus_Set(cmd);
 					TIM10secInt_Set(shootMs);
 					PutString_DMA_USART1("Shoot!\r\n", (char *) txbuff);
-					wrkCounter++;
-				} else if (wrkCounter % WRK_STATES_NUM == BEGIN_WAIT) {
+					wrkStat = SHOOT;
+				} else if (wrkStat == BEGIN_WAIT) {
 					OutputBus_Clear();
-					TIM10secInt_Set(waitMs);
-					PutString_DMA_USART1("Wait!\r\n", (char *) txbuff);
-					wrkCounter++;
+					if (tryNum == ATTEMPTS_MAX) {
+						tryNum = 1;	wrkStat = BEGIN_SHOOT; // reinit working counters
+						break;	// end of the work cycle
+					} else {
+						TIM10secInt_Set(waitMs);
+						PutString_DMA_USART1("Wait!\r\n", (char *) txbuff);
+						wrkStat = WAIT;
+						tryNum++;
+					}
 				}
 			}
+			GPIOE->ODR &= ~GPIO_ODR_8;
 			GPIOE->BSRR ^= GPIO_BSRR_BS_11;
 			status_M = FIN;
 			endIndic_F = 1;	// Indicate game over

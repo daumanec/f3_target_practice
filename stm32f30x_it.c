@@ -41,7 +41,7 @@ extern volatile int8_t inputData;
 
 extern volatile changeT changeT_M;
 extern volatile progStat status_M;
-extern volatile uint8_t wrkCounter;
+extern volatile uint8_t wrkStat;
 
 /* Private variables ---------------------------------------------------------*/
 uint8_t bounceFiltered_F = 1;
@@ -171,7 +171,6 @@ void EXTI0_IRQHandler(void)
 		EXTI_ClearITPendingBit(EXTI_Line0);
 
 		if (bounceFiltered_F && (status_M == INI || status_M == FIN)) {
-			wrkCounter = 0;	// reinit working counters
 			status_M = WRK;
 			BBFilter(&bounceFiltered_F);
 		}
@@ -301,7 +300,11 @@ void TIM2_IRQHandler(void)
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update)) {
 		TIM2->CR1 &= ~TIM_CR1_CEN;
 		if (status_M == WRK) {
-			wrkCounter++;
+			if (wrkStat == SHOOT) {
+				wrkStat = BEGIN_WAIT;
+			} else {
+				wrkStat = BEGIN_SHOOT;
+			}
 			GPIOE->ODR ^= GPIO_ODR_8;
 		}
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);

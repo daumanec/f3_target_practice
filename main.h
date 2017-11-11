@@ -35,6 +35,13 @@ typedef enum {
 	FIN
 } progStat;
 
+typedef enum {
+	BEGIN_SHOOT = 0,
+	SHOOT,
+	BEGIN_WAIT,
+	WAIT,
+} wrkState;
+
 /* Public define ------------------------------------------------------------*/
 #define DBG
 
