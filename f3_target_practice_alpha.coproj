@@ -89,11 +89,11 @@
     <File name="cmsis/core_cm4_simd.h" path="cmsis/core_cm4_simd.h" type="1"/>
     <File name="cmsis_lib/include/stm32f30x_dma.h" path="cmsis_lib/include/stm32f30x_dma.h" type="1"/>
     <File name="stm32f30x_it.h" path="stm32f30x_it.h" type="1"/>
-    <File name="cmsis/core_cmFunc.h" path="cmsis/core_cmFunc.h" type="1"/>
     <File name="cmsis_lib/source/stm32f30x_misc.c" path="cmsis_lib/source/stm32f30x_misc.c" type="1"/>
+    <File name="cmsis/core_cmFunc.h" path="cmsis/core_cmFunc.h" type="1"/>
     <File name="cmsis/core_cm4.h" path="cmsis/core_cm4.h" type="1"/>
-    <File name="cmsis_lib/include/stm32f30x_tim.h" path="cmsis_lib/include/stm32f30x_tim.h" type="1"/>
     <File name="main.h" path="main.h" type="1"/>
+    <File name="cmsis_lib/include/stm32f30x_tim.h" path="cmsis_lib/include/stm32f30x_tim.h" type="1"/>
     <File name="cmsis_lib/include/stm32f30x_rcc.h" path="cmsis_lib/include/stm32f30x_rcc.h" type="1"/>
     <File name="tests" path="" type="2"/>
     <File name="syscalls/syscalls.c" path="syscalls/syscalls.c" type="1"/>
@@ -109,8 +109,8 @@
     <File name="cmsis_lib/include/stm32f30x_misc.h" path="cmsis_lib/include/stm32f30x_misc.h" type="1"/>
     <File name="cmsis_lib/include/stm32f30x_usart.h" path="cmsis_lib/include/stm32f30x_usart.h" type="1"/>
     <File name="user/f3_adc_zlib.h" path="user/f3_adc_zlib.h" type="1"/>
-    <File name="cmsis_lib/source/stm32f30x_syscfg.c" path="cmsis_lib/source/stm32f30x_syscfg.c" type="1"/>
     <File name="cmsis/core_cmInstr.h" path="cmsis/core_cmInstr.h" type="1"/>
+    <File name="cmsis_lib/source/stm32f30x_syscfg.c" path="cmsis_lib/source/stm32f30x_syscfg.c" type="1"/>
     <File name="cmsis_boot/stm32f30x.h" path="cmsis_boot/stm32f30x.h" type="1"/>
     <File name="cmsis_lib/include/stm32f30x_syscfg.h" path="cmsis_lib/include/stm32f30x_syscfg.h" type="1"/>
     <File name="cmsis_lib/source/stm32f30x_dma.c" path="cmsis_lib/source/stm32f30x_dma.c" type="1"/>

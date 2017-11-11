@@ -386,7 +386,8 @@ int8_t OutputBus_Set(uint8_t command)
 	if (command > BUS_MAX_VALUE_MASK) {
 		return -1;
 	}
-	GPIOA->BSRR |= ((uint32_t)command << OUTPUT_BUS_DATA_SHIFT);
+//	GPIOA->BSRR |= ((uint32_t)command << OUTPUT_BUS_DATA_SHIFT);
+	GPIOA->ODR |= ((uint32_t)command << OUTPUT_BUS_DATA_SHIFT);
 	return 0;
 }
 
@@ -399,7 +400,7 @@ int8_t OutputBus_Set(uint8_t command)
  */
 void OutputBus_Clear(void)
 {
-	GPIOA->BSRR |= ((uint32_t)BUS_FULL_MASK << OUTPUT_BUS_DATA_SHIFT << SHIFT_TO_RESET_BSRR_PART);
+	GPIOA->ODR &= ~((uint32_t)BUS_FULL_MASK << OUTPUT_BUS_DATA_SHIFT);
 }
 
 //-------------------------------------------------------------------------//
