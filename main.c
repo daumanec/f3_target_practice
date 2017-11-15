@@ -113,7 +113,6 @@ int main(void)
 	Delay(100);
 	status_M = PREINI;
 
-
 	while (!error) {
 		switch (status_M){
 		case PREINI:

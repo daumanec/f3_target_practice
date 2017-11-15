@@ -47,7 +47,7 @@ typedef enum {
 
 #define WRK_STATES_NUM	4
 
-#define ATTEMPTS_MAX	5
+#define ATTEMPTS_MAX	10
 
 /* Public macro -------------------------------------------------------------*/
 /* Public variables ---------------------------------------------------------*/
