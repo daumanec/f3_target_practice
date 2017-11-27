@@ -118,13 +118,13 @@
     <File name="user/f3_usart_zlib.c" path="user/f3_usart_zlib.c" type="1"/>
     <File name="tests/tests.h" path="tests/tests.h" type="1"/>
     <File name="cmsis_lib/source/stm32f30x_tim.c" path="cmsis_lib/source/stm32f30x_tim.c" type="1"/>
-    <File name="cmsis" path="" type="2"/>
+    <File name="cmsis_boot/system_stm32f30x.c" path="cmsis_boot/system_stm32f30x.c" type="1"/>
     <File name="cmsis_lib/source/stm32f30x_gpio.c" path="cmsis_lib/source/stm32f30x_gpio.c" type="1"/>
+    <File name="cmsis" path="" type="2"/>
     <File name="cmsis_lib" path="" type="2"/>
     <File name="syscalls" path="" type="2"/>
     <File name="user/button.c" path="user/button.c" type="1"/>
     <File name="cmsis_lib/include" path="" type="2"/>
-    <File name="cmsis_boot/system_stm32f30x_temp.c" path="../SINS_STM32_1.0/cmsis_boot/system_stm32f30x_temp.c" type="1"/>
     <File name="user/f3_adc_zlib.c" path="user/f3_adc_zlib.c" type="1"/>
     <File name="cmsis_lib/source/stm32f30x_usart.c" path="cmsis_lib/source/stm32f30x_usart.c" type="1"/>
     <File name="stm32f30x_it.c" path="stm32f30x_it.c" type="1"/>

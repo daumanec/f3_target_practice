@@ -87,7 +87,7 @@ int main(void)
 	char tmpC[10];
 	uint8_t endIndic_F = 0;
 
-	SysTick_Config(SystemCoreClock / 100);
+	SysTick_Config(SystemCoreClock / 100); // if instead of 100 is 1000 GPIO's not working
 	NVIC_Priority_Config();
 	LEDs_Ini();
 
@@ -105,7 +105,7 @@ int main(void)
 	Switcher_Ini();
 	OutputBus_Ini();
 	InputBus_Ini();
-	TIM10secInt_Ini();	// TODO wrong timing (smaller, than should be)
+	TIM10secInt_Ini();
 	InitializeLCD();
 
 	ADC1_Ini();
@@ -589,6 +589,8 @@ void BBFilter_Ini(void)
   * @brief  TIM2 initialization
   * @note	Timer to make regular iterations
   * 		Max interval between iterations = 10s, min = 1 ms
+  * 		(TIM_Prescaler / 2 because of uint16_t limitation)
+  *
   * @param  msT: interval duration in ms (max 10000!!!)
   * @retval Nope
   */
@@ -600,7 +602,7 @@ void TIM10secInt_Ini(void)
 
 	TIM_TimeBaseStructInit(&TIM_TimeBaseInitStruct);
 	TIM_TimeBaseInitStruct.TIM_Prescaler =
-				  (uint16_t)(((SystemCoreClock / 2) / (uint16_t)2000) - 1);
+				  (uint16_t)(((SystemCoreClock/1000) / 2) - 1);
 	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStruct);
 
 	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
@@ -617,6 +619,8 @@ void TIM10secInt_Ini(void)
   * @brief  Set TIM2 period
   * @note	Timer to make regular iterations
   * 		Max interval between iterations = 10s, min = 1 ms
+  * 		(msT * 2 because TIM_Presc == prescaler / 2)
+  *
   * @param  msT: interval duration in ms (max 10000!!!)
   * @retval Nope
   */
