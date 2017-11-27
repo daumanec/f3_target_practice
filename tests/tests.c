@@ -155,6 +155,17 @@ int8_t test_LCD()
 	return 1;
 }
 
+int8_t test_LCD_alex()
+{
+	lcd44780_ClearLCD();
+	// cursor is till at 00
+	lcd44780_ShowStr("Hello! I am a");
+	lcd44780_SetLCDPosition(1,0);
+	Cursor(1,0);
+	lcd44780_ShowStr("target trainer!");
+	return 1;
+}
+
 void test_RandomGen(char *outS, char *tmpC, uint8_t *txbuff)
 {
 	uint8_t cmd, cmd_old = 0;
