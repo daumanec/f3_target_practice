@@ -18,7 +18,8 @@
 
 #include "tests.h"
 
-#include "lcd.h"
+//#include "lcd.h"
+#include "lcd-hd44780.h"
 /* Private typedef -----------------------------------------------------------*/
 typedef enum {
 	INC_DEC_IDLE_STATE = 0,

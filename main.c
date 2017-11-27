@@ -106,10 +106,11 @@ int main(void)
 	OutputBus_Ini();
 	InputBus_Ini();
 	TIM10secInt_Ini();
-	InitializeLCD();
+	lcd44780_init_pins();
+	lcd44780_init();
 
 	ADC1_Ini();
-	test_LCD();	// LCD greeting
+	test_LCD_alex();
 	Delay(100);
 	status_M = PREINI;
 
@@ -128,17 +129,16 @@ int main(void)
 			strcat(outS, " ms\r\n");
 //			Delay(10);
 			PutString_DMA_USART1((const char *)outS, (char *) txbuff);
-			ClearLCDScreen();
-			Cursor(0,0);
+			lcd44780_ClearLCD();
 			strcpy(lcdS, "Shoot: ");
 			strcat(lcdS, itoa(shootMs, tmpC, 10));
 			strcat(lcdS, " ms");
-			PrintStr(lcdS);
-			Cursor(1,0);
+			lcd44780_ShowStr(lcdS);
+			lcd44780_SetLCDPosition(0,1);
 			strcpy(lcdS, " Wait: ");
 			strcat(lcdS, itoa(waitMs, tmpC, 10));
 			strcat(lcdS, " ms");
-			PrintStr(lcdS);
+			lcd44780_ShowStr(lcdS);
 			status_M = INI;
 		case INI:
 			if (changeT_M == INCR_SHOOT) {
@@ -159,10 +159,7 @@ int main(void)
 			if (changeT_M == INCR_SHOOT || changeT_M == DECR_SHOOT) {
 				strcpy(outS, "Shooting time is now: ");
 				strcat(outS, itoa(shootMs, tmpC, 10));
-//				while (ClearString(1)) {
-//					// TODO wrong function input
-//				}
-				Cursor(0,0);
+				lcd44780_SetLCDPosition(0,0);
 				if (shootMs < 1000) {
 					strcpy(lcdS, "Shoot:  ");
 				} else {
@@ -170,14 +167,11 @@ int main(void)
 				}
 				strcat(lcdS, itoa(shootMs, tmpC, 10));
 				strcat(lcdS, " ms");
-				PrintStr(lcdS);
+				lcd44780_ShowStr(lcdS);
 			} else {
 				strcpy(outS, "Waiting time is now: ");
 				strcat(outS, itoa(waitMs, tmpC, 10));
-//				while (ClearString(2)) {
-//					// TODO wrong function input
-//				}
-				Cursor(1,0);
+				lcd44780_SetLCDPosition(0,1);
 				if (waitMs < 1000) {
 					strcpy(lcdS, " Wait:  ");
 				} else {
@@ -185,7 +179,7 @@ int main(void)
 				}
 				strcat(lcdS, itoa(waitMs, tmpC, 10));
 				strcat(lcdS, " ms");
-				PrintStr(lcdS);
+				lcd44780_ShowStr(lcdS);
 			}
 			strcat(outS, " ms\r\n");
 			changeT_M = INC_DEC_IDLE_STATE;
@@ -194,13 +188,12 @@ int main(void)
 		case WRK:
 			PutString_DMA_USART1("Begin the game!\r\n", (char *) txbuff);
 			GPIOB->ODR &= ~LED_CLEAR_ODR_MASK;
-			ClearLCDScreen();
-			Cursor(0,0);
-			PrintStr("Ready ");
+			lcd44780_ClearLCD();
+			lcd44780_ShowStr("Ready ");
 			Delay(100);
-			PrintStr("steady ");
+			lcd44780_ShowStr("steady ");
 			Delay(100);
-			PrintStr("GO!");
+			lcd44780_ShowStr("GO!");
 			while (1) {
 				if (wrkStat == BEGIN_SHOOT) {
 					cmd = Get_Random();
@@ -241,11 +234,10 @@ int main(void)
 					"To repeat the game press \"START\" button.\r\n"
 					"To change timings before new game press \"RESTART\""
 					" button.\r\n", (char *) txbuff);
-				ClearLCDScreen();
-				Cursor(0,0);
-				PrintStr("Game over!");
-				Cursor(1,0);
-				PrintStr("Restart/Reset?");
+				lcd44780_ClearLCD();
+				lcd44780_ShowStr("Game over!");
+				lcd44780_SetLCDPosition(0,1);
+				lcd44780_ShowStr("Restart/Reset?");
 				endIndic_F = 0;
 			} else {
 				if (rsetButtonPressed_F) {

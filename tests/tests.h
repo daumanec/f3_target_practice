@@ -19,6 +19,7 @@ void test_LedsVisualy(void);
 int8_t test_Button(uint8_t *press_F);
 int8_t test_Switch(void);
 int8_t test_LCD();
+int8_t test_LCD_alex();
 void test_RandomGen(char *outS, char *tmpC, uint8_t *txbuff);
 /* Private functions ---------------------------------------------------------*/
 
